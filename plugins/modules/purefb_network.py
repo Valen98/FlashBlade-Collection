@@ -224,6 +224,10 @@ def main():
 
     if not HAS_PYPURECLIENT:
         module.fail_json(msg="py-pure-client sdk is required for this module")
+    state = module.params["state"]
+    blade = get_system(module)
+    iface = get_iface(module, blade)
+
     api_version = list(blade.get_versions().items)
     if LooseVersion(SERVERS_API_VERSION) > LooseVersion(api_version):
         module.fail_json(
@@ -231,9 +235,6 @@ def main():
                 SERVERS_API_VERSION, api_version
             )
         )
-    state = module.params["state"]
-    blade = get_system(module)
-    iface = get_iface(module, blade)
 
     if state == "present" and not iface:
         create_iface(module, blade)
