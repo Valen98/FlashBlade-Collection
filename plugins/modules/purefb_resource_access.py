@@ -100,10 +100,11 @@ EXAMPLES = r"""
 RETURN = r"""
 """
 
+HAS_PYPURECLIENT = True
 try:
     from pypureclient.flashblade import ResourceAccessPost
 except ImportError:
-    pass
+    HAS_PYPURECLIENT = False
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.everpure.flashblade.plugins.module_utils.purefb import (
@@ -196,13 +197,15 @@ def main():
     )
 
     module = AnsibleModule(argument_spec, supports_check_mode=True)
+    if not HAS_PYPURECLIENT:
+        module.fail_json(msg="py-pure-client sdk is required for this module")
 
     state = module.params["state"]
     blade = get_system(module)
     api_version = get_rest_api_version(blade)
     if LooseVersion(MINIMUM_API_VERSION) > LooseVersion(api_version):
         module.fail_json(
-            msg="Resource Access are not supported. Purity//FB 4.6.1, or higher, is required."
+            msg="Resource Access is not supported. Purity//FB 4.6.1, or higher, is required."
         )
     resource, access_id = get_resource_access(module, blade)
 
