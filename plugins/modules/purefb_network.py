@@ -167,17 +167,13 @@ def modify_iface(module, blade):
     """Modify Network Interface IP address"""
     changed = False
     iface = get_iface(module, blade)
-    if (
-        module.params["address"] != iface.address
-        or module.params["attached_server"] != iface.attached_server
-    ):
+    if module.params["address"] != iface.address:
         changed = True
         if not module.check_mode:
             res = blade.patch_network_interfaces(
                 names=[module.params["name"]],
                 network_interface=NetworkInterfacePatch(
-                    address=module.params["address"],
-                    attached_server=module.params["attached_server"],
+                    address=module.params["address"]
                 ),
             )
             if res.status_code != 200:
@@ -186,6 +182,22 @@ def modify_iface(module, blade):
                         module.params["name"], get_error_message(res)
                     )
                 )
+        elif module.params["attached_server"] != iface.attached_server:
+            """If the attached server is different, it will be moved to the new server"""
+            changed = True
+            if not module.check_mode:
+                res = blade.patch_network_interfaces(
+                    names=[module.params["name"]],
+                    network_interface=NetworkInterfacePatch(
+                        attached_server=module.params["attached_server"]
+                    ),
+                )
+                if res.status_code != 200:
+                    module.fail_json(
+                        msg="Failed to modify Interface {0}. Error: {1}".format(
+                            module.params["name"], get_error_message(res)
+                        )
+                    )
     module.exit_json(changed=changed)
 
 
