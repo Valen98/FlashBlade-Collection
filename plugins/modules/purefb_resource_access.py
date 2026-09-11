@@ -30,6 +30,24 @@ options:
       - The type of resource you want to add.
     type: str
     required: true
+    choices: [
+        hosts,
+        host-groups,
+        network-interfaces,
+        pods,
+        ports,
+        pod-replica-links,
+        subnets,
+        volumes,
+        volume-snapshots,
+        volume-groups,
+        directories,
+        policies/nfs,
+        policies/smb,
+        policies/snapshot,
+        realms,
+        dns
+    ]
   resource_name:
     description:
       - The name of the resource you want to target.
@@ -47,6 +65,23 @@ options:
       - When using Realms, this value will be 'realms'
     type: str
     required: true
+    choices: [
+        hosts,
+        host-groups,
+        network-interfaces,
+        pods,
+        ports,
+        pod-replica-links,
+        subnets,
+        volumes,
+        volume-snapshots,
+        volume-groups,
+        directories,
+        policies/nfs,
+        policies/smb,
+        policies/snapshot,
+        realms
+    ]
   scope_name:
     description:
       - The name of the scope, that should be using the resource.
@@ -84,15 +119,6 @@ EXAMPLES = r"""
     scope_type: realms
     scope_name: realm_foo
     state: absent
-    fb_url: 10.10.10.2
-    api_token: T-9f276a18-50ab-446e-8a0c-666a3529a1b6
-
-- name: Create new resource access for between realm and DNS (Not deleting the DNS)
-  everpure.flashblade.purefb_resource_access:
-    resource_type: dns
-    resource_name: management
-    scope_type: realms
-    scope_name: realm_foo
     fb_url: 10.10.10.2
     api_token: T-9f276a18-50ab-446e-8a0c-666a3529a1b6
 """
@@ -188,10 +214,50 @@ def main():
     argument_spec = purefb_argument_spec()
     argument_spec.update(
         dict(
-            resource_type=dict(type="str", required=True),
+            resource_type=dict(
+                type="str",
+                required=True,
+                choices=[
+                    "hosts",
+                    "host-groups",
+                    "network-interfaces",
+                    "pods",
+                    "ports",
+                    "pod-replica-links",
+                    "subnets",
+                    "volumes",
+                    "volume-snapshots",
+                    "volume-groups",
+                    "directories",
+                    "policies/nfs",
+                    "policies/smb",
+                    "policies/snapshot",
+                    "dns",
+                ],
+            ),
             resource_name=dict(type="str", required=True),
             state=dict(type="str", default="present", choices=["absent", "present"]),
-            scope_type=dict(type="str", required=True),
+            scope_type=dict(
+                type="str",
+                required=True,
+                choices=[
+                    "hosts",
+                    "host-groups",
+                    "network-interfaces",
+                    "pods",
+                    "ports",
+                    "pod-replica-links",
+                    "subnets",
+                    "volumes",
+                    "volume-snapshots",
+                    "volume-groups",
+                    "directories",
+                    "policies/nfs",
+                    "policies/smb",
+                    "policies/snapshot",
+                    "realms",
+                ],
+            ),
             scope_name=dict(type="str", required=True),
         )
     )
