@@ -48,6 +48,9 @@ options:
   local_directory_service:
     description:
     - The local directory service configuration to be used for this server
+    - Set to an empty string (C("")) to clear a previously assigned local directory
+      service. This only applies on update; on create an empty string is treated the
+      same as omitting the parameter.
     type: str
 extends_documentation_fragment:
 - everpure.flashblade.everpure.fb
@@ -65,6 +68,13 @@ EXAMPLES = r"""
   everpure.flashblade.purefb_server:
     name: myserver
     state: absent
+    fb_url: 10.10.10.2
+    api_token: T-68618f31-0c9e-4e57-aa44-5306a2cf10e3
+
+- name: Clear local directory service
+  everpure.flashblade.purefb_server:
+    name: myserver
+    local_directory_service: ""
     fb_url: 10.10.10.2
     api_token: T-68618f31-0c9e-4e57-aa44-5306a2cf10e3
 """
@@ -164,7 +174,8 @@ def update_server(module, blade):
         current_lds = getattr(
             getattr(server_info, "local_directory_service", None), "name", None
         )
-        if module.params["local_directory_service"] != current_lds:
+        # normalise "" to None so clearing an already-unset field is a no-op
+        if (module.params["local_directory_service"] or None) != current_lds:
             changed = True
             if not module.check_mode:
                 res = blade.patch_servers(
