@@ -45,7 +45,6 @@ options:
         policies/nfs,
         policies/smb,
         policies/snapshot,
-        realms,
         dns
     ]
   resource_name:
