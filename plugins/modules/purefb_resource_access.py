@@ -28,25 +28,12 @@ options:
   resource_type:
     description:
       - The type of resource you want to add.
+      - The set of valid resource types is defined by the array and grows
+        with the REST API version, so it is not validated by this module.
+        Examples are C(dns), C(subnets), C(network-interfaces) and
+        C(policies/nfs).
     type: str
     required: true
-    choices: [
-        hosts,
-        host-groups,
-        network-interfaces,
-        pods,
-        ports,
-        pod-replica-links,
-        subnets,
-        volumes,
-        volume-snapshots,
-        volume-groups,
-        directories,
-        policies/nfs,
-        policies/smb,
-        policies/snapshot,
-        dns
-    ]
   resource_name:
     description:
       - The name of the resource you want to target.
@@ -62,25 +49,10 @@ options:
     description:
       - The type of scopes.
       - When using Realms, this value will be 'realms'
+      - As with I(resource_type), the set of valid scope types is defined
+        by the array and is not validated by this module.
     type: str
     required: true
-    choices: [
-        hosts,
-        host-groups,
-        network-interfaces,
-        pods,
-        ports,
-        pod-replica-links,
-        subnets,
-        volumes,
-        volume-snapshots,
-        volume-groups,
-        directories,
-        policies/nfs,
-        policies/smb,
-        policies/snapshot,
-        realms
-    ]
   scope_name:
     description:
       - The name of the scope, that should be using the resource.
@@ -213,50 +185,10 @@ def main():
     argument_spec = purefb_argument_spec()
     argument_spec.update(
         dict(
-            resource_type=dict(
-                type="str",
-                required=True,
-                choices=[
-                    "hosts",
-                    "host-groups",
-                    "network-interfaces",
-                    "pods",
-                    "ports",
-                    "pod-replica-links",
-                    "subnets",
-                    "volumes",
-                    "volume-snapshots",
-                    "volume-groups",
-                    "directories",
-                    "policies/nfs",
-                    "policies/smb",
-                    "policies/snapshot",
-                    "dns",
-                ],
-            ),
+            resource_type=dict(type="str", required=True),
             resource_name=dict(type="str", required=True),
             state=dict(type="str", default="present", choices=["absent", "present"]),
-            scope_type=dict(
-                type="str",
-                required=True,
-                choices=[
-                    "hosts",
-                    "host-groups",
-                    "network-interfaces",
-                    "pods",
-                    "ports",
-                    "pod-replica-links",
-                    "subnets",
-                    "volumes",
-                    "volume-snapshots",
-                    "volume-groups",
-                    "directories",
-                    "policies/nfs",
-                    "policies/smb",
-                    "policies/snapshot",
-                    "realms",
-                ],
-            ),
+            scope_type=dict(type="str", required=True),
             scope_name=dict(type="str", required=True),
         )
     )
