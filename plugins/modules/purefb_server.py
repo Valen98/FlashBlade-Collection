@@ -51,6 +51,7 @@ options:
     - Set to an empty string (C("")) to clear a previously assigned local directory
       service. This only applies on update; on create an empty string is treated the
       same as omitting the parameter.
+    - Only valid with REST 2.24 or higher
     type: str
 extends_documentation_fragment:
 - everpure.flashblade.everpure.fb
@@ -102,6 +103,7 @@ from ansible_collections.everpure.flashblade.plugins.module_utils.version import
 )
 
 MIN_REQUIRED_API_VERSION = "2.16"
+LOCAL_DS_API_VERSION = "2.24"
 
 
 def delete_server(module, blade):
@@ -254,6 +256,15 @@ def main():
         module.fail_json(
             msg="FlashBlade REST version not supported. "
             "Minimum version required: {0}".format(MIN_REQUIRED_API_VERSION)
+        )
+    if module.params["local_directory_service"] is not None and LooseVersion(
+        LOCAL_DS_API_VERSION
+    ) > LooseVersion(api_version):
+        module.fail_json(
+            msg="FlashBlade REST version {0} does not support "
+            "local_directory_service (requires {1} or higher).".format(
+                api_version, LOCAL_DS_API_VERSION
+            )
         )
     state = module.params["state"]
 
